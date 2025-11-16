@@ -14,6 +14,10 @@ const Index = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleReset = () => {
+    setUploadedImage(null);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -24,7 +28,7 @@ const Index = () => {
 
         {/* Preview Box */}
         <div className="aspect-square bg-card border border-border rounded-[var(--radius)] p-8">
-          <ImagePreview uploadedImage={uploadedImage} />
+          <ImagePreview uploadedImage={uploadedImage} onReset={handleReset} />
         </div>
       </div>
 

@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import frameOverlay from "@/assets/frame-overlay.png";
 import { Button } from "./ui/button";
 
 interface ImagePreviewProps {
   uploadedImage: string | null;
+  onReset: () => void;
 }
 
-export const ImagePreview = ({ uploadedImage }: ImagePreviewProps) => {
+export const ImagePreview = ({ uploadedImage, onReset }: ImagePreviewProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [compositeDataUrl, setCompositeDataUrl] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
     if (!uploadedImage || !canvasRef.current) return;
@@ -31,17 +33,20 @@ export const ImagePreview = ({ uploadedImage }: ImagePreviewProps) => {
       const size = Math.min(canvas.width, canvas.height);
       const aspectRatio = img.width / img.height;
       
-      let drawWidth = size;
-      let drawHeight = size;
+      let drawWidth = size * zoom;
+      let drawHeight = size * zoom;
       
       if (aspectRatio > 1) {
-        drawHeight = size / aspectRatio;
+        drawHeight = (size / aspectRatio) * zoom;
       } else {
-        drawWidth = size * aspectRatio;
+        drawWidth = (size * aspectRatio) * zoom;
       }
 
       const x = (canvas.width - drawWidth) / 2;
       const y = (canvas.height - drawHeight) / 2;
+
+      // Clear canvas before drawing
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw uploaded image
       ctx.drawImage(img, x, y, drawWidth, drawHeight);
@@ -59,7 +64,16 @@ export const ImagePreview = ({ uploadedImage }: ImagePreviewProps) => {
     };
 
     img.src = uploadedImage;
-  }, [uploadedImage]);
+  }, [uploadedImage, zoom]);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    setZoom((prev) => {
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      const newZoom = prev + delta;
+      return Math.max(0.5, Math.min(3, newZoom));
+    });
+  };
 
   const handleDownload = () => {
     if (!compositeDataUrl) return;
@@ -84,27 +98,42 @@ export const ImagePreview = ({ uploadedImage }: ImagePreviewProps) => {
 
   return (
     <div
-      className="relative w-full h-full flex items-center justify-center"
+      className="relative w-full h-full flex flex-col items-center justify-center gap-4"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <canvas
-        ref={canvasRef}
-        className="max-w-full max-h-full object-contain"
-      />
+      <div className="relative flex-1 w-full flex items-center justify-center" onWheel={handleWheel}>
+        <canvas
+          ref={canvasRef}
+          className="max-w-full max-h-full object-contain"
+        />
+        
+        {isHovered && (
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center gap-3 transition-opacity">
+            <Button
+              onClick={handleDownload}
+              size="lg"
+              className="gap-2"
+            >
+              <Download className="w-5 h-5" />
+              Download
+            </Button>
+            <Button
+              onClick={onReset}
+              size="lg"
+              variant="outline"
+              className="gap-2"
+            >
+              <RotateCcw className="w-5 h-5" />
+              Reset
+            </Button>
+          </div>
+        )}
+      </div>
       
-      {isHovered && (
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity">
-          <Button
-            onClick={handleDownload}
-            size="lg"
-            className="gap-2"
-          >
-            <Download className="w-5 h-5" />
-            Download
-          </Button>
-        </div>
-      )}
+      <div className="text-sm text-muted-foreground">
+        Scroll to zoom • Zoom: {Math.round(zoom * 100)}%
+      </div>
     </div>
   );
 };
