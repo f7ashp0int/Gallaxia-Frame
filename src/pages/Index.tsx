@@ -1,12 +1,34 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { ImageUpload } from "@/components/ImageUpload";
+import { ImagePreview } from "@/components/ImagePreview";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
+  const handleImageUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setUploadedImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background flex items-center justify-center p-8">
+      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Upload Box */}
+        <div className="aspect-square bg-card border border-border rounded-[var(--radius)] p-8">
+          <ImageUpload onImageUpload={handleImageUpload} />
+        </div>
+
+        {/* Preview Box */}
+        <div className="aspect-square bg-card border border-border rounded-[var(--radius)] p-8">
+          <ImagePreview uploadedImage={uploadedImage} />
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
