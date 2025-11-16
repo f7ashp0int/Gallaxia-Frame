@@ -5,10 +5,11 @@ import { Button } from "./ui/button";
 
 interface ImagePreviewProps {
   uploadedImage: string | null;
-  onReset: () => void;
+  onReset?: () => void;
+  onZoomChange?: (zoom: number) => void;
 }
 
-export const ImagePreview = ({ uploadedImage, onReset }: ImagePreviewProps) => {
+export const ImagePreview = ({ uploadedImage, onReset, onZoomChange }: ImagePreviewProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [compositeDataUrl, setCompositeDataUrl] = useState<string | null>(null);
@@ -71,7 +72,9 @@ export const ImagePreview = ({ uploadedImage, onReset }: ImagePreviewProps) => {
     setZoom((prev) => {
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       const newZoom = prev + delta;
-      return Math.max(0.5, Math.min(3, newZoom));
+      const clamped = Math.max(0.5, Math.min(3, newZoom));
+      onZoomChange?.(clamped);
+      return clamped;
     });
   };
 
@@ -82,6 +85,13 @@ export const ImagePreview = ({ uploadedImage, onReset }: ImagePreviewProps) => {
     link.download = "framed-image.png";
     link.href = compositeDataUrl;
     link.click();
+  };
+
+  const handleReset = () => {
+    // Reset zoom to initial state and re-render
+    setZoom(1);
+    onZoomChange?.(1);
+    onReset?.();
   };
 
   if (!uploadedImage) {
@@ -98,41 +108,28 @@ export const ImagePreview = ({ uploadedImage, onReset }: ImagePreviewProps) => {
 
   return (
     <div
-      className="relative w-full h-full flex flex-col items-center justify-center gap-4"
+      className="relative w-full h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative flex-1 w-full flex items-center justify-center" onWheel={handleWheel}>
-        <canvas
-          ref={canvasRef}
-          className="max-w-full max-h-full object-contain"
-        />
-        
+      <div
+        className="relative w-full h-full rounded-[var(--radius)] ring-1 ring-border bg-muted/30 overflow-hidden"
+        onWheel={handleWheel}
+      >
+        <canvas ref={canvasRef} className="w-full h-full" />
+
         {isHovered && (
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center gap-3 transition-opacity">
-            <Button
-              onClick={handleDownload}
-              size="lg"
-              className="gap-2"
-            >
+            <Button onClick={handleDownload} size="lg" className="gap-2">
               <Download className="w-5 h-5" />
               Download
             </Button>
-            <Button
-              onClick={onReset}
-              size="lg"
-              variant="outline"
-              className="gap-2"
-            >
+            <Button onClick={handleReset} size="lg" variant="outline" className="gap-2">
               <RotateCcw className="w-5 h-5" />
               Reset
             </Button>
           </div>
         )}
-      </div>
-      
-      <div className="text-sm text-muted-foreground">
-        Scroll to zoom • Zoom: {Math.round(zoom * 100)}%
       </div>
     </div>
   );

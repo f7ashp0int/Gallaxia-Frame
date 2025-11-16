@@ -5,9 +5,23 @@ import creatorLogo from "@/assets/creator-logo.png";
 export const Footer = () => {
   return (
     <footer className="w-full mt-12 pb-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
-        {/* Made with love */}
-        <div className="flex items-center gap-2 text-muted-foreground">
+      <div className="max-w-7xl mx-auto grid grid-cols-3 items-center px-6">
+        {/* Donate button - Left */}
+        <div className="justify-self-start">
+          <a
+            href="https://idriss.xyz/f7ashp0int"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="lg" className="gap-2">
+              <DollarSign className="w-4 h-4" />
+              Donate
+            </Button>
+          </a>
+        </div>
+
+        {/* Made with love - Center */}
+        <div className="justify-self-center flex items-center gap-2 text-muted-foreground">
           <span>Made with</span>
           <Heart className="w-4 h-4 fill-primary text-primary" />
           <span>by</span>
@@ -26,20 +40,8 @@ export const Footer = () => {
           </a>
         </div>
 
-        {/* Donate button */}
-        <a
-          href="https://idriss.xyz/f7ashp0int"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button variant="outline" size="lg" className="gap-2">
-            <DollarSign className="w-4 h-4" />
-            Donate
-          </Button>
-        </a>
-
-        {/* Logo */}
-        <div>
+        {/* Logo - Right */}
+        <div className="justify-self-end">
           <img 
             src={creatorLogo} 
             alt="Logo" 
