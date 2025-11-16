@@ -1,5 +1,6 @@
 import { Button } from "./ui/button";
 import { DollarSign } from "lucide-react";
+import creatorLogo from "@/assets/creator-logo.png";
 
 export const Footer = () => {
   return (
@@ -9,22 +10,20 @@ export const Footer = () => {
         Donate
       </Button>
       
-      <div className="flex items-center gap-2 text-foreground">
+      <div className="flex items-center gap-3 text-foreground">
         <span>Follow the creator on X</span>
         <a
-          href="https://x.com/f7ash"
+          href="https://x.com/itsf7ash"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          <svg
-            viewBox="0 0 24 24"
-            className="w-5 h-5 fill-current"
-            aria-hidden="true"
-          >
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
-          f7ash
+          <img 
+            src={creatorLogo} 
+            alt="Creator Logo" 
+            className="w-8 h-8 rounded-lg"
+          />
+          <span className="text-primary font-medium">itsf7ash</span>
         </a>
       </div>
     </footer>
