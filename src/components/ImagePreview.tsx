@@ -73,7 +73,11 @@ export const ImagePreview = ({ uploadedImage }: ImagePreviewProps) => {
   if (!uploadedImage) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <p className="text-muted-foreground text-xl">Preview will appear here</p>
+        <img 
+          src={frameOverlay} 
+          alt="Frame Preview" 
+          className="max-w-full max-h-full object-contain opacity-50"
+        />
       </div>
     );
   }
