@@ -22,6 +22,7 @@ export const Footer = () => {
               alt="Creator" 
               className="w-6 h-6 rounded"
             />
+            <span className="text-primary font-medium">@itsf7ash</span>
           </a>
         </div>
 
